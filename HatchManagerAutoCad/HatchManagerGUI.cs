@@ -103,5 +103,10 @@ namespace HatchManagerAutoCad
         {
 
         }
+
+        private void buttonNew_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
