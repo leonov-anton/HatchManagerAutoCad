@@ -16,6 +16,7 @@ using AcadOpenMode = Autodesk.AutoCAD.DatabaseServices.OpenMode;
 using Entity = Autodesk.AutoCAD.DatabaseServices.Entity;
 using System.Linq;
 using Autodesk.Civil;
+using static Autodesk.AutoCAD.Internal.Forms.ExListView;
 
 namespace HatchManagerAutoCad
 {
@@ -35,10 +36,10 @@ namespace HatchManagerAutoCad
             this.HatchLayer = hatchAtr[5];
             this.HatchColor = hatchAtr[6];
             this.HatchColorBack = hatchAtr[7]; 
-            this.ODTableName = hatchAtr[8];
-            this.ODTableFieldsName = hatchAtr[9];
-            this.ODTableFieldType = hatchAtr[10];
-            this.ODTableFieldSorce = hatchAtr[11];
+            this.ODTableName = hatchAtr[9];
+            this.ODTableFieldsName = hatchAtr[10];
+            this.ODTableFieldType = hatchAtr[11];
+            this.ODTableFieldSorce = hatchAtr[12];
             try
             {
                 this.HatchAngle = byte.Parse(hatchAtr[4]);
@@ -173,7 +174,6 @@ namespace HatchManagerAutoCad
                     SetHatchProperty(hatchObj);
 
                 }
-                
                 t.Commit();
                 return;
             }
@@ -241,6 +241,24 @@ namespace HatchManagerAutoCad
             }
         }
 
+        private void WriteObjectData(Hatch hatchObj)
+        {
+            ODTable table = GetOrCreateODTable();
+            ODTables tables = map.ActiveProject.ODTables;
+            Records objectRecs = tables.GetObjectRecords(0, hatchObj.ObjectId, Autodesk.Gis.Map.Constants.OpenMode.OpenForWrite, true);
+            if (objectRecs.Count > 0)
+            {
+                System.Collections.IEnumerator iter = objectRecs.GetEnumerator();
+                iter.MoveNext();
+                objectRecs.RemoveRecord();
+                objectRecs.Dispose();
+            }
+            Record rec = Record.Create();
+            table.InitRecord(rec);
+            // добавить ввод данных, но надо понять как их лучше брать
+            table.AddRecord(rec, hatchObj.ObjectId);
+        }
+
         private ODTable GetOrCreateODTable()
         {
             ODTables tables = map.ActiveProject.ODTables;
@@ -268,8 +286,5 @@ namespace HatchManagerAutoCad
                 return table;
             }
         }
-
-
-
     }
 }
