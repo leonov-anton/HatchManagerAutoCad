@@ -148,7 +148,7 @@ namespace HatchManagerAutoCad
             }
         }
 
-        private void ChangeHatch()
+        public void ChangeHatch()
         {
             List<TypedValue> typedValueList = new List<TypedValue>();
             typedValueList.Add(new TypedValue(0, "HATCH"));
@@ -174,6 +174,34 @@ namespace HatchManagerAutoCad
                     return;
                 }
             }
+        }
+
+        public void SetOdataTable()
+        {
+            List<TypedValue> typedValueList = new List<TypedValue>();
+            typedValueList.Add(new TypedValue(0, "HATCH"));
+            SelectionFilter selectionFilter = new SelectionFilter(typedValueList.ToArray());
+            PromptSelectionResult psr = ed.GetSelection(selectionFilter);
+            if (psr.Status != PromptStatus.OK)
+            {
+                ed.WriteMessage("\nВыполнение прервано");
+                return;
+            }
+
+            using (DocumentLock docLock = doc.LockDocument())
+            {
+                using (Transaction t = db.TransactionManager.StartTransaction())
+                {
+                    foreach (ObjectId objectId in psr.Value)
+                    {
+                        Hatch hatchObj = (Hatch)t.GetObject(objectId, AcadOpenMode.ForWrite);
+                        WriteObjectData(hatchObj);
+                    }
+                    t.Commit();
+                    return;
+                }
+            }
+
         }
 
         private void SetHatchProperty(Hatch hatchObj)

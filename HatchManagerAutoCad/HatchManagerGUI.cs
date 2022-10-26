@@ -105,12 +105,14 @@ namespace HatchManagerAutoCad
 
         private void buttonChange_Click(object sender, EventArgs e)
         {
-
+            HatchManager hatchManager = new HatchManager(db.getHatchData((string)dataGridViewHatchData.SelectedRows[0].Cells[0].Value, (string)listBoxGroupe.SelectedItem));
+            hatchManager.ChangeHatch();
         }
 
-        private void pictureBox_Click(object sender, EventArgs e)
+        private void buttonSetOD_Click(object sender, EventArgs e)
         {
-
+            HatchManager hatchManager = new HatchManager(db.getHatchData((string)dataGridViewHatchData.SelectedRows[0].Cells[0].Value, (string)listBoxGroupe.SelectedItem));
+            hatchManager.SetOdataTable();
         }
     }
 }
