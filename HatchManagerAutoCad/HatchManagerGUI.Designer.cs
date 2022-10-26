@@ -33,6 +33,8 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HatchManagerGUI));
             this.comboBoxChapter = new System.Windows.Forms.ComboBox();
             this.labelChapter = new System.Windows.Forms.Label();
             this.listBoxDomain = new System.Windows.Forms.ListBox();
@@ -42,13 +44,13 @@
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.labelPic = new System.Windows.Forms.Label();
             this.dataGridViewHatchData = new System.Windows.Forms.DataGridView();
+            this.buttonNew = new System.Windows.Forms.Button();
+            this.buttonChange = new System.Windows.Forms.Button();
             this.HatchName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Description = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PatName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Layer = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Img = new System.Windows.Forms.DataGridViewImageColumn();
-            this.buttonChange = new System.Windows.Forms.Button();
-            this.buttonNew = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewHatchData)).BeginInit();
             this.SuspendLayout();
@@ -109,16 +111,17 @@
             // 
             // pictureBox
             // 
-            this.pictureBox.Location = new System.Drawing.Point(20, 295);
+            this.pictureBox.Location = new System.Drawing.Point(20, 302);
             this.pictureBox.Name = "pictureBox";
             this.pictureBox.Size = new System.Drawing.Size(200, 200);
             this.pictureBox.TabIndex = 6;
             this.pictureBox.TabStop = false;
+            this.pictureBox.Click += new System.EventHandler(this.pictureBox_Click);
             // 
             // labelPic
             // 
             this.labelPic.AutoSize = true;
-            this.labelPic.Location = new System.Drawing.Point(17, 279);
+            this.labelPic.Location = new System.Drawing.Point(17, 286);
             this.labelPic.Name = "labelPic";
             this.labelPic.Size = new System.Drawing.Size(121, 13);
             this.labelPic.TabIndex = 7;
@@ -126,6 +129,13 @@
             // 
             // dataGridViewHatchData
             // 
+            this.dataGridViewHatchData.AllowUserToAddRows = false;
+            this.dataGridViewHatchData.AllowUserToDeleteRows = false;
+            this.dataGridViewHatchData.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dataGridViewHatchData.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dataGridViewHatchData.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
             dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
@@ -142,10 +152,36 @@
             this.Layer,
             this.Img});
             this.dataGridViewHatchData.Location = new System.Drawing.Point(238, 20);
+            this.dataGridViewHatchData.MinimumSize = new System.Drawing.Size(300, 0);
+            this.dataGridViewHatchData.MultiSelect = false;
             this.dataGridViewHatchData.Name = "dataGridViewHatchData";
-            this.dataGridViewHatchData.Size = new System.Drawing.Size(524, 474);
+            this.dataGridViewHatchData.RowHeadersVisible = false;
+            this.dataGridViewHatchData.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridViewHatchData.Size = new System.Drawing.Size(532, 482);
             this.dataGridViewHatchData.TabIndex = 8;
             this.dataGridViewHatchData.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewHatchData_CellContentClick);
+            // 
+            // buttonNew
+            // 
+            this.buttonNew.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonNew.Location = new System.Drawing.Point(604, 518);
+            this.buttonNew.Name = "buttonNew";
+            this.buttonNew.Size = new System.Drawing.Size(70, 30);
+            this.buttonNew.TabIndex = 10;
+            this.buttonNew.Text = "Новая";
+            this.buttonNew.UseVisualStyleBackColor = true;
+            this.buttonNew.Click += new System.EventHandler(this.buttonNew_Click);
+            // 
+            // buttonChange
+            // 
+            this.buttonChange.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonChange.Location = new System.Drawing.Point(697, 518);
+            this.buttonChange.Name = "buttonChange";
+            this.buttonChange.Size = new System.Drawing.Size(73, 30);
+            this.buttonChange.TabIndex = 11;
+            this.buttonChange.Text = "Изменить";
+            this.buttonChange.UseVisualStyleBackColor = true;
+            this.buttonChange.Click += new System.EventHandler(this.buttonChange_Click);
             // 
             // HatchName
             // 
@@ -162,7 +198,6 @@
             this.Description.HeaderText = "Описание";
             this.Description.Name = "Description";
             this.Description.ReadOnly = true;
-            this.Description.Width = 150;
             // 
             // PatName
             // 
@@ -171,7 +206,6 @@
             this.PatName.HeaderText = "Имя образца";
             this.PatName.Name = "PatName";
             this.PatName.ReadOnly = true;
-            this.PatName.Width = 50;
             // 
             // Layer
             // 
@@ -183,47 +217,32 @@
             // 
             // Img
             // 
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle6.NullValue = ((object)(resources.GetObject("dataGridViewCellStyle6.NullValue")));
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.Img.DefaultCellStyle = dataGridViewCellStyle6;
             this.Img.HeaderText = "Вид";
+            this.Img.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
             this.Img.Name = "Img";
             this.Img.ReadOnly = true;
-            this.Img.Width = 80;
-            // 
-            // buttonChange
-            // 
-            this.buttonChange.Location = new System.Drawing.Point(692, 510);
-            this.buttonChange.Name = "buttonChange";
-            this.buttonChange.Size = new System.Drawing.Size(70, 30);
-            this.buttonChange.TabIndex = 9;
-            this.buttonChange.Text = "Изменить";
-            this.buttonChange.UseVisualStyleBackColor = true;
-            this.buttonChange.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // buttonNew
-            // 
-            this.buttonNew.Location = new System.Drawing.Point(607, 510);
-            this.buttonNew.Name = "buttonNew";
-            this.buttonNew.Size = new System.Drawing.Size(70, 30);
-            this.buttonNew.TabIndex = 10;
-            this.buttonNew.Text = "Новая";
-            this.buttonNew.UseVisualStyleBackColor = true;
-            this.buttonNew.Click += new System.EventHandler(this.buttonNew_Click);
             // 
             // HatchManagerGUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(779, 553);
-            this.Controls.Add(this.buttonNew);
+            this.ClientSize = new System.Drawing.Size(784, 561);
             this.Controls.Add(this.buttonChange);
+            this.Controls.Add(this.buttonNew);
             this.Controls.Add(this.dataGridViewHatchData);
-            this.Controls.Add(this.labelPic);
             this.Controls.Add(this.pictureBox);
-            this.Controls.Add(this.labelGroupe);
             this.Controls.Add(this.listBoxGroupe);
-            this.Controls.Add(this.labelDomain);
             this.Controls.Add(this.listBoxDomain);
-            this.Controls.Add(this.labelChapter);
             this.Controls.Add(this.comboBoxChapter);
+            this.Controls.Add(this.labelChapter);
+            this.Controls.Add(this.labelDomain);
+            this.Controls.Add(this.labelGroupe);
+            this.Controls.Add(this.labelPic);
+            this.MinimumSize = new System.Drawing.Size(800, 600);
             this.Name = "HatchManagerGUI";
             this.Text = "Менеджер Штриховок";
             this.Load += new System.EventHandler(this.HatchManagerGUI_Load);
@@ -246,12 +265,12 @@
         private System.Windows.Forms.PictureBox pictureBox;
         private System.Windows.Forms.Label labelPic;
         private System.Windows.Forms.DataGridView dataGridViewHatchData;
+        private System.Windows.Forms.Button buttonNew;
+        private System.Windows.Forms.Button buttonChange;
         private System.Windows.Forms.DataGridViewTextBoxColumn HatchName;
         private System.Windows.Forms.DataGridViewTextBoxColumn Description;
         private System.Windows.Forms.DataGridViewTextBoxColumn PatName;
         private System.Windows.Forms.DataGridViewTextBoxColumn Layer;
         private System.Windows.Forms.DataGridViewImageColumn Img;
-        private System.Windows.Forms.Button buttonChange;
-        private System.Windows.Forms.Button buttonNew;
     }
 }

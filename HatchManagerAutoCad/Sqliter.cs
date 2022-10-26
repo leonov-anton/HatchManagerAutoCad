@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Data.Sqlite;
@@ -7,7 +8,7 @@ namespace HatchManagerAutoCad
 {
     public class Sqliter
     {
-        private static string dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "landscape.db");
+        private static string dbPath = "base\\landscape.db";
 
         public List<string> getChapters()
         {
@@ -33,7 +34,7 @@ namespace HatchManagerAutoCad
         public List<string> getDomains(string chapterName)
         {
             List<string> domainsList = new List<string>();
-            string getDomainsSql = $"SELECT name FROM 'DOMAIN' WHERE chapter_id IN (SELECT id FROM FROM 'CHAPTER' WHERE name={chapterName})";
+            string getDomainsSql = $"SELECT name FROM 'DOMAIN' WHERE chaptar_id IN (SELECT id FROM 'CHAPTER' WHERE name='{chapterName}')";
 
             using (SqliteConnection conn = new SqliteConnection($"Data Source={dbPath}"))
             {
@@ -54,9 +55,7 @@ namespace HatchManagerAutoCad
         public List<string> getGroups(string domainName, string chapterName)
         {
             List<string> groupsList = new List<string>();
-            string getGroupsSql = $"SELECT name FROM 'GROUPS' WHERE domain_id " +
-                                  $"IN $(SELECT id FROM 'DOMAIN' WHERE name = {domainName} AND chapter_id " +
-                                  $"IN (SELECT id FROM 'CHAPTER' WHERE name={chapterName}))";
+            string getGroupsSql = $"SELECT name FROM 'GROUPS' WHERE domain_id IN (SELECT id FROM 'DOMAIN' WHERE name='{domainName}' AND chaptar_id IN (SELECT id FROM 'CHAPTER' WHERE name='{chapterName}'))";
 
             using (SqliteConnection conn = new SqliteConnection($"Data Source={dbPath}"))
             {
@@ -77,21 +76,38 @@ namespace HatchManagerAutoCad
         public List<List<string>> getHatchsData(string groupeName)
         {
             List<List<string>> hatchsList = new List<List<string>>();
-            string getHatchsSql = $"SELECT name, description, hatch_pattern, layer, guid FROM {groupeName}";
+
+            string getGroupTableName = $"SELECT od_table_name FROM 'GROUPS' WHERE name='{groupeName}'";
 
             using (SqliteConnection conn = new SqliteConnection($"Data Source={dbPath}"))
             {
+                string groupTableName = "";
                 conn.Open();
+                using (SqliteCommand cmd = new SqliteCommand(getGroupTableName, conn))
+                {
+                    SqliteDataReader sqliteDataReader = cmd.ExecuteReader();
+                    while (sqliteDataReader.Read())
+                    {
+                        groupTableName = (string)sqliteDataReader.GetValue(0);
+                    }
+                }
+
+                string getHatchsSql = $"SELECT name, description, hatch_pattern, layer, guid FROM '{groupTableName}'";
                 using (SqliteCommand cmd = new SqliteCommand(getHatchsSql, conn))
                 {
                     SqliteDataReader sqliteDataReader = cmd.ExecuteReader();
                     while (sqliteDataReader.Read())
                     {
-                        List<string> hatchList = new List<string> { (string)sqliteDataReader.GetValue(0), 
-                                                                    (string)sqliteDataReader.GetValue(1), 
-                                                                    (string)sqliteDataReader.GetValue(2),
-                                                                    (string)sqliteDataReader.GetValue(3),
-                                                                    (string)sqliteDataReader.GetValue(4)};
+                        List<string> hatchList = new List<string>();
+                        hatchList.Add((string)sqliteDataReader.GetValue(0));
+                        if (sqliteDataReader.IsDBNull(1))
+                            hatchList.Add("");
+                        else
+                            hatchList.Add((string)sqliteDataReader.GetValue(1));
+                        hatchList.Add((string)sqliteDataReader.GetValue(2));
+                        hatchList.Add((string)sqliteDataReader.GetValue(3));
+                        hatchList.Add((string)sqliteDataReader.GetValue(4));
+
                         hatchsList.Add(hatchList);
                     }
                 }
@@ -100,39 +116,126 @@ namespace HatchManagerAutoCad
             return hatchsList;
         }
 
-        public List<string> getHatchData(string hatchName, string groupeName)
+        public ArrayList getHatchData(string hatchName, string groupeName)
         {
-            List<string> hatchList = new List<string>();
-            string getHatchSql = $"SELECT hatch_Pattern, description, scale, angle, layer, color, color_back, trans, Group.OD_Table_Name, Group.Propertes, Group.Propertes_Data_Type, Group.Propertes_Table" +
-                                $"FROM {groupeName} " +
-                                $"JOIN Group " +
-                                $"ON {groupeName}.Group_ID = Group.ID " +
-                                $"WHERE {groupeName}.Name = {hatchName}";
+            ArrayList hatchList = new ArrayList();
+            hatchList.Add((string)hatchName);
+
+            string groupTableName = "";
+            string getGroupTableName = $"SELECT od_table_name FROM 'GROUPS' WHERE name='{groupeName}'";
+            
+            using (SqliteConnection conn = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                conn.Open();
+                using (SqliteCommand cmd = new SqliteCommand(getGroupTableName, conn))
+                {
+                    SqliteDataReader sqliteDataReader = cmd.ExecuteReader();
+                    while (sqliteDataReader.Read())
+                    {
+                        groupTableName = (string)sqliteDataReader.GetValue(0);
+                    }
+                }
+                string getHatchSql = $"SELECT hatch_pattern, description, scale, angle, layer, color, color_back, trans, 'GROUPS'.od_table_name, 'GROUPS'.propertes, 'GROUPS'.propertes_data_type, 'GROUPS'.propertes_table FROM '{groupTableName}' JOIN 'GROUPS' ON '{groupTableName}'.group_id = 'GROUPS'.id WHERE '{groupTableName}'.name=@hatchName";
+
+                using (SqliteCommand cmd = new SqliteCommand(getHatchSql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@hatchName", hatchName);
+                    SqliteDataReader sqliteDataReader = cmd.ExecuteReader();
+                    while (sqliteDataReader.Read())
+                    {
+                        hatchList.Add(sqliteDataReader.GetValue(0)); // hatch_pattern
+                        if (sqliteDataReader.IsDBNull(1)) // description
+                            hatchList.Add("");
+                        else
+                            hatchList.Add(sqliteDataReader.GetValue(1)); 
+                        hatchList.Add(sqliteDataReader.GetValue(2)); // scale
+                        if (sqliteDataReader.IsDBNull(3)) // angle
+                            hatchList.Add(0);
+                        else
+                            hatchList.Add(sqliteDataReader.GetValue(3));
+                        hatchList.Add(sqliteDataReader.GetValue(4)); // layer
+                        if (sqliteDataReader.IsDBNull(5)) // color
+                            hatchList.Add("");
+                        else    
+                            hatchList.Add(sqliteDataReader.GetValue(5));
+                        if (sqliteDataReader.IsDBNull(6)) // color_back
+                            hatchList.Add("");
+                        else
+                            hatchList.Add(sqliteDataReader.GetValue(6));
+                        if (sqliteDataReader.IsDBNull(7)) // trans
+                            hatchList.Add(0);
+                        else
+                            hatchList.Add(sqliteDataReader.GetValue(7));
+                        hatchList.Add(sqliteDataReader.GetValue(8)); // od_table_name
+                        hatchList.Add(sqliteDataReader.GetValue(9)); // proprtes
+                        hatchList.Add(sqliteDataReader.GetValue(10)); // proprtes_data_type
+                        hatchList.Add(sqliteDataReader.GetValue(11)); // proprtes_table
+                    }
+                    conn.Close();
+                }
+            }
+            return hatchList;
+        }
+
+        public int getIntObjData(string valueName, string groupeName, string hatchName)
+        {
+            int value = 0;
+            string getHatchSql = $"SELECT {valueName} FROM '{groupeName}' WHERE name=@hatchName";
             using (SqliteConnection conn = new SqliteConnection($"Data Source={dbPath}"))
             {
                 conn.Open();
                 using (SqliteCommand cmd = new SqliteCommand(getHatchSql, conn))
                 {
+                    cmd.Parameters.AddWithValue("@hatchName", hatchName);
                     SqliteDataReader sqliteDataReader = cmd.ExecuteReader();
                     while (sqliteDataReader.Read())
                     {
-                        hatchList = new List<string> { hatchName,
-                                                       (string)sqliteDataReader.GetValue(0), 
-                                                       (string)sqliteDataReader.GetValue(1), 
-                                                       (string)sqliteDataReader.GetValue(2),
-                                                       (string)sqliteDataReader.GetValue(3),
-                                                       (string)sqliteDataReader.GetValue(4),
-                                                       (string)sqliteDataReader.GetValue(5),
-                                                       (string)sqliteDataReader.GetValue(6),
-                                                       (string)sqliteDataReader.GetValue(7),
-                                                       (string)sqliteDataReader.GetValue(8),
-                                                       (string)sqliteDataReader.GetValue(9),
-                                                       (string)sqliteDataReader.GetValue(10),
-                                                       (string)sqliteDataReader.GetValue(11)};
+                        value = (int)sqliteDataReader.GetValue(0);
                     }
+                    conn.Close();
                 }
             }
-            return hatchList;
+            return value;
+        }
+        public string getStrObjData(string valueName, string groupeName, string hatchName)
+        {
+            string value ="";
+            string getHatchSql = $"SELECT {valueName} FROM '{groupeName}' WHERE name=@hatchName";
+            using (SqliteConnection conn = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                conn.Open();
+                using (SqliteCommand cmd = new SqliteCommand(getHatchSql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@hatchName", hatchName);
+                    SqliteDataReader sqliteDataReader = cmd.ExecuteReader();
+                    while (sqliteDataReader.Read())
+                    {
+                        value = (string)sqliteDataReader.GetValue(0);
+                    }
+                    conn.Close();
+                }
+            }
+            return value;
+        }
+        public double getRealObjData(string valueName, string groupeName, string hatchName)
+        {
+            double value = 0;
+            string getHatchSql = $"SELECT {valueName} FROM '{groupeName}' WHERE name=@hatchName";
+            using (SqliteConnection conn = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                conn.Open();
+                using (SqliteCommand cmd = new SqliteCommand(getHatchSql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@hatchName", hatchName);
+                    SqliteDataReader sqliteDataReader = cmd.ExecuteReader();
+                    while (sqliteDataReader.Read())
+                    {
+                        value = (double)sqliteDataReader.GetValue(0);
+                    }
+                    conn.Close();
+                }
+            }
+            return value;
         }
     }
 }

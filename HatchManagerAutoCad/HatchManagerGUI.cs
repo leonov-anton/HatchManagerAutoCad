@@ -33,7 +33,7 @@ namespace HatchManagerAutoCad
         private void updateDomains()
         {
             listBoxDomain.Items.Clear();
-            foreach (string domain in db.getDomains(comboBoxChapter.SelectedText))
+            foreach (string domain in db.getDomains((string)comboBoxChapter.SelectedItem))
                 listBoxDomain.Items.Add(domain);
             if (listBoxDomain.Items.Count > 0)
                 listBoxDomain.SelectedIndex = 0;
@@ -42,7 +42,7 @@ namespace HatchManagerAutoCad
         private void updateGroups()
         {
             listBoxGroupe.Items.Clear();
-            foreach (string group in db.getGroups(listBoxDomain.SelectedItem.ToString()))
+            foreach (string group in db.getGroups((string)listBoxDomain.SelectedItem, (string)comboBoxChapter.SelectedItem))
                 listBoxGroupe.Items.Add(group);
             if (listBoxGroupe.Items.Count > 0)
                 listBoxGroupe.SelectedIndex = 0;
@@ -54,12 +54,16 @@ namespace HatchManagerAutoCad
             dataGridViewHatchData.Rows.Clear();
             pictureBox.Image = null;
             int n = 0;
-            foreach (List<string> hatchData in db.getHatchsData(listBoxDomain.SelectedItem.ToString()))
+            foreach (List<string> hatchData in db.getHatchsData((string)listBoxGroupe.SelectedItem))
             {
                 dataGridViewHatchData.Rows.Add(hatchData[0], hatchData[1], hatchData[2], hatchData[3]);
-                Bitmap img = new Bitmap(Application.StartupPath + $"{hatchData[4]}.png");
+                Bitmap img = new Bitmap($"base\\landscape\\{hatchData[4]}.png");
                 dataGridViewHatchData.Rows[n].Cells[4].Value = img;
+                dataGridViewHatchData.Rows[n].Height = 60;
+                n++;
             }
+            if (dataGridViewHatchData.Rows.Count > 0)
+                dataGridViewHatchData.Rows[0].Selected = true;
         }
 
         private void updatePictureBox()
@@ -71,22 +75,16 @@ namespace HatchManagerAutoCad
         private void HatchManagerGUI_Load(object sender, EventArgs e)
         {
             updateChapters();
-            updateDomains();
-            updateGroups();
-            updateHatchs();
         }
 
         private void chapter_comboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             updateDomains();
-            updateGroups();
-            updateHatchs();
         }
 
         private void listBoxDomain_SelectedIndexChanged(object sender, EventArgs e)
         {
             updateGroups();
-            updateHatchs();
         }
 
         private void listBoxGroupe_SelectedIndexChanged(object sender, EventArgs e)
@@ -99,12 +97,18 @@ namespace HatchManagerAutoCad
             updatePictureBox();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void buttonNew_Click(object sender, EventArgs e)
+        {
+            HatchManager hatchManager = new HatchManager(db.getHatchData((string)dataGridViewHatchData.SelectedRows[0].Cells[0].Value, (string)listBoxGroupe.SelectedItem));
+            hatchManager.CreateNewHatch();
+        }
+
+        private void buttonChange_Click(object sender, EventArgs e)
         {
 
         }
 
-        private void buttonNew_Click(object sender, EventArgs e)
+        private void pictureBox_Click(object sender, EventArgs e)
         {
 
         }
