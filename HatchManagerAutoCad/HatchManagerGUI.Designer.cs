@@ -28,12 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle19 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle20 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle21 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle22 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle23 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle24 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HatchManagerGUI));
             this.comboBoxChapter = new System.Windows.Forms.ComboBox();
             this.labelChapter = new System.Windows.Forms.Label();
@@ -44,13 +44,13 @@
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.labelPic = new System.Windows.Forms.Label();
             this.dataGridViewHatchData = new System.Windows.Forms.DataGridView();
-            this.buttonNew = new System.Windows.Forms.Button();
-            this.buttonChange = new System.Windows.Forms.Button();
             this.HatchName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Description = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PatName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Layer = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Img = new System.Windows.Forms.DataGridViewImageColumn();
+            this.buttonNew = new System.Windows.Forms.Button();
+            this.buttonChange = new System.Windows.Forms.Button();
             this.buttonSetOD = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewHatchData)).BeginInit();
@@ -113,6 +113,7 @@
             // pictureBox
             // 
             this.pictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.pictureBox.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pictureBox.Location = new System.Drawing.Point(20, 302);
             this.pictureBox.Name = "pictureBox";
             this.pictureBox.Size = new System.Drawing.Size(200, 200);
@@ -138,14 +139,14 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dataGridViewHatchData.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridViewHatchData.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridViewHatchData.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle19.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle19.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle19.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle19.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle19.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle19.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle19.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridViewHatchData.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle19;
             this.dataGridViewHatchData.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewHatchData.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.HatchName,
@@ -162,6 +163,49 @@
             this.dataGridViewHatchData.Size = new System.Drawing.Size(532, 482);
             this.dataGridViewHatchData.TabIndex = 8;
             this.dataGridViewHatchData.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewHatchData_CellContentClick);
+            // 
+            // HatchName
+            // 
+            dataGridViewCellStyle20.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.HatchName.DefaultCellStyle = dataGridViewCellStyle20;
+            this.HatchName.HeaderText = "Имя";
+            this.HatchName.Name = "HatchName";
+            this.HatchName.ReadOnly = true;
+            // 
+            // Description
+            // 
+            dataGridViewCellStyle21.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Description.DefaultCellStyle = dataGridViewCellStyle21;
+            this.Description.HeaderText = "Описание";
+            this.Description.Name = "Description";
+            this.Description.ReadOnly = true;
+            // 
+            // PatName
+            // 
+            dataGridViewCellStyle22.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.PatName.DefaultCellStyle = dataGridViewCellStyle22;
+            this.PatName.HeaderText = "Имя образца";
+            this.PatName.Name = "PatName";
+            this.PatName.ReadOnly = true;
+            // 
+            // Layer
+            // 
+            dataGridViewCellStyle23.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Layer.DefaultCellStyle = dataGridViewCellStyle23;
+            this.Layer.HeaderText = "Слой";
+            this.Layer.Name = "Layer";
+            this.Layer.ReadOnly = true;
+            // 
+            // Img
+            // 
+            dataGridViewCellStyle24.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle24.NullValue = ((object)(resources.GetObject("dataGridViewCellStyle24.NullValue")));
+            dataGridViewCellStyle24.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.Img.DefaultCellStyle = dataGridViewCellStyle24;
+            this.Img.HeaderText = "Вид";
+            this.Img.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
+            this.Img.Name = "Img";
+            this.Img.ReadOnly = true;
             // 
             // buttonNew
             // 
@@ -187,51 +231,9 @@
             this.buttonChange.UseVisualStyleBackColor = true;
             this.buttonChange.Click += new System.EventHandler(this.buttonChange_Click);
             // 
-            // HatchName
-            // 
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.HatchName.DefaultCellStyle = dataGridViewCellStyle2;
-            this.HatchName.HeaderText = "Имя";
-            this.HatchName.Name = "HatchName";
-            this.HatchName.ReadOnly = true;
-            // 
-            // Description
-            // 
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Description.DefaultCellStyle = dataGridViewCellStyle3;
-            this.Description.HeaderText = "Описание";
-            this.Description.Name = "Description";
-            this.Description.ReadOnly = true;
-            // 
-            // PatName
-            // 
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.PatName.DefaultCellStyle = dataGridViewCellStyle4;
-            this.PatName.HeaderText = "Имя образца";
-            this.PatName.Name = "PatName";
-            this.PatName.ReadOnly = true;
-            // 
-            // Layer
-            // 
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Layer.DefaultCellStyle = dataGridViewCellStyle5;
-            this.Layer.HeaderText = "Слой";
-            this.Layer.Name = "Layer";
-            this.Layer.ReadOnly = true;
-            // 
-            // Img
-            // 
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle6.NullValue = ((object)(resources.GetObject("dataGridViewCellStyle6.NullValue")));
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.Img.DefaultCellStyle = dataGridViewCellStyle6;
-            this.Img.HeaderText = "Вид";
-            this.Img.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
-            this.Img.Name = "Img";
-            this.Img.ReadOnly = true;
-            // 
             // buttonSetOD
             // 
+            this.buttonSetOD.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonSetOD.Location = new System.Drawing.Point(607, 518);
             this.buttonSetOD.Margin = new System.Windows.Forms.Padding(10, 3, 10, 3);
             this.buttonSetOD.Name = "buttonSetOD";
@@ -260,7 +262,9 @@
             this.Controls.Add(this.labelPic);
             this.MinimumSize = new System.Drawing.Size(800, 600);
             this.Name = "HatchManagerGUI";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Менеджер Штриховок";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.HatchManagerGUI_FormClosing);
             this.Load += new System.EventHandler(this.HatchManagerGUI_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewHatchData)).EndInit();

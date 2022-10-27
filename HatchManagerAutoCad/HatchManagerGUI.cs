@@ -1,13 +1,6 @@
-﻿using Autodesk.AutoCAD.DatabaseServices.Internal;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace HatchManagerAutoCad
@@ -16,6 +9,10 @@ namespace HatchManagerAutoCad
     {
 
         Sqliter db = new Sqliter();
+
+        private string chapterName { get; set; }
+        private string domainName { get; set; }
+        private string groupeName { get; set; }
 
         public HatchManagerGUI()
         {
@@ -27,7 +24,15 @@ namespace HatchManagerAutoCad
             foreach (string chapt in db.getChapters())
                 comboBoxChapter.Items.Add(chapt);
             if (comboBoxChapter.Items.Count > 0)
-                comboBoxChapter.SelectedIndex = 0;
+            {
+                if (!string.IsNullOrEmpty(chapterName))
+                {
+                    comboBoxChapter.Text = chapterName;
+                    chapterName = null;
+                }
+                else
+                    comboBoxChapter.SelectedIndex = 0;
+            }
         }
 
         private void updateDomains()
@@ -36,7 +41,15 @@ namespace HatchManagerAutoCad
             foreach (string domain in db.getDomains((string)comboBoxChapter.SelectedItem))
                 listBoxDomain.Items.Add(domain);
             if (listBoxDomain.Items.Count > 0)
-                listBoxDomain.SelectedIndex = 0;
+            {
+                if (!string.IsNullOrEmpty(domainName))
+                {
+                    listBoxDomain.Text = domainName;
+                    domainName = null;
+                }
+                else
+                    listBoxDomain.SelectedIndex = 0;
+            }
         }
 
         private void updateGroups()
@@ -45,7 +58,15 @@ namespace HatchManagerAutoCad
             foreach (string group in db.getGroups((string)listBoxDomain.SelectedItem, (string)comboBoxChapter.SelectedItem))
                 listBoxGroupe.Items.Add(group);
             if (listBoxGroupe.Items.Count > 0)
-                listBoxGroupe.SelectedIndex = 0;
+            {
+                if (!string.IsNullOrEmpty(groupeName))
+                {
+                    listBoxGroupe.Text = groupeName;
+                    groupeName = null;
+                }
+                else
+                    listBoxGroupe.SelectedIndex = 0;
+            }
         }
 
         private void updateHatchs()
@@ -74,6 +95,10 @@ namespace HatchManagerAutoCad
 
         private void HatchManagerGUI_Load(object sender, EventArgs e)
         {
+            string[] userPath = db.getUserDir(Environment.UserName);
+            chapterName = userPath[0];
+            domainName = userPath[1];
+            groupeName = userPath[2];
             updateChapters();
         }
 
@@ -99,20 +124,28 @@ namespace HatchManagerAutoCad
 
         private void buttonNew_Click(object sender, EventArgs e)
         {
-            HatchManager hatchManager = new HatchManager(db.getHatchData((string)dataGridViewHatchData.SelectedRows[0].Cells[0].Value, (string)listBoxGroupe.SelectedItem));
+            HatchManager hatchManager = new HatchManager(db.getHatchData((string)dataGridViewHatchData.SelectedRows[0].Cells[0].Value, 
+                                                        (string)listBoxGroupe.SelectedItem));
             hatchManager.CreateNewHatch();
         }
 
         private void buttonChange_Click(object sender, EventArgs e)
         {
-            HatchManager hatchManager = new HatchManager(db.getHatchData((string)dataGridViewHatchData.SelectedRows[0].Cells[0].Value, (string)listBoxGroupe.SelectedItem));
+            HatchManager hatchManager = new HatchManager(db.getHatchData((string)dataGridViewHatchData.SelectedRows[0].Cells[0].Value, 
+                                                        (string)listBoxGroupe.SelectedItem));
             hatchManager.ChangeHatch();
         }
 
         private void buttonSetOD_Click(object sender, EventArgs e)
         {
-            HatchManager hatchManager = new HatchManager(db.getHatchData((string)dataGridViewHatchData.SelectedRows[0].Cells[0].Value, (string)listBoxGroupe.SelectedItem));
+            HatchManager hatchManager = new HatchManager(db.getHatchData((string)dataGridViewHatchData.SelectedRows[0].Cells[0].Value, 
+                                                        (string)listBoxGroupe.SelectedItem));
             hatchManager.SetOdataTable();
+        }
+
+        private void HatchManagerGUI_FormClosing(Object sender, FormClosingEventArgs e)
+        {
+            db.setUserPath(Environment.UserName, (string)listBoxGroupe.SelectedItem);
         }
     }
 }

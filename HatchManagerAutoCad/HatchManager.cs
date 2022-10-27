@@ -8,16 +8,9 @@ using ODTables = Autodesk.Gis.Map.ObjectData.Tables;
 using ODTable = Autodesk.Gis.Map.ObjectData.Table;
 using System;
 using System.Collections.Generic;
-using Autodesk.Gis.Map.Topology;
 using Autodesk.Gis.Map.ObjectData;
-using Autodesk.Civil.DatabaseServices;
-using MapOpenMode = Autodesk.Gis.Map.Topology.OpenMode;
-using AcadOpenMode = Autodesk.AutoCAD.DatabaseServices.OpenMode;
 using Entity = Autodesk.AutoCAD.DatabaseServices.Entity;
 using System.Linq;
-using Autodesk.Civil;
-using static Autodesk.AutoCAD.Internal.Forms.ExListView;
-using Autodesk.Gis.Map.Utilities;
 using System.Collections;
 
 namespace HatchManagerAutoCad
@@ -67,6 +60,7 @@ namespace HatchManagerAutoCad
         static public void CreateBlockTable()
         {
             HatchManagerGUI hatchMan = new HatchManagerGUI();
+            //Application.ShowModalDialog(hatchMan);
             hatchMan.Show();
         }
 
@@ -88,7 +82,7 @@ namespace HatchManagerAutoCad
                     // Создание штриховки
                     Hatch newHatchObj = new Hatch();
 
-                    BlockTableRecord btr = (BlockTableRecord)t.GetObject(db.CurrentSpaceId, AcadOpenMode.ForWrite);
+                    BlockTableRecord btr = (BlockTableRecord)t.GetObject(db.CurrentSpaceId, OpenMode.ForWrite);
                     btr.AppendEntity(newHatchObj);
                     t.AddNewlyCreatedDBObject(newHatchObj, true);
 
@@ -138,13 +132,12 @@ namespace HatchManagerAutoCad
 
                     // Назначение контура штриховки
                     newHatchObj.AppendLoop(HatchLoopTypes.Default, hatBounObjIdCol);
-                    newHatchObj.EvaluateHatch(true);
                     SetHatchProperty(newHatchObj);
+                    newHatchObj.EvaluateHatch(true);
                     WriteObjectData(newHatchObj);
-
+                    ed.Regen();
                     t.Commit();
                 }
-
             }
         }
 
@@ -164,14 +157,15 @@ namespace HatchManagerAutoCad
             {
                 using (Transaction t = db.TransactionManager.StartTransaction())
                 {
-                    foreach (ObjectId objectId in psr.Value)
+                    foreach (ObjectId objectId in psr.Value.GetObjectIds())
                     {
-                        Hatch hatchObj = (Hatch)t.GetObject(objectId, AcadOpenMode.ForWrite);
+                        Hatch hatchObj = (Hatch)t.GetObject(objectId, OpenMode.ForWrite);
                         SetHatchProperty(hatchObj);
+                        hatchObj.EvaluateHatch(true);
                         WriteObjectData(hatchObj);
                     }
+                    ed.Regen();
                     t.Commit();
-                    return;
                 }
             }
         }
@@ -192,13 +186,13 @@ namespace HatchManagerAutoCad
             {
                 using (Transaction t = db.TransactionManager.StartTransaction())
                 {
-                    foreach (ObjectId objectId in psr.Value)
+                    foreach (ObjectId objectId in psr.Value.GetObjectIds())
                     {
-                        Hatch hatchObj = (Hatch)t.GetObject(objectId, AcadOpenMode.ForWrite);
+                        Hatch hatchObj = (Hatch)t.GetObject(objectId, OpenMode.ForWrite);
                         WriteObjectData(hatchObj);
                     }
                     t.Commit();
-                    return;
+                    ed.Regen();
                 }
             }
 
@@ -234,7 +228,7 @@ namespace HatchManagerAutoCad
                     hatchObj.BackgroundColor = Color.FromColorIndex(ColorMethod.ByAci, short.Parse(HatchColorBack));
 
                 // Проверка есть ли слой, если нет создает
-                LayerTable lt = (LayerTable)trn.GetObject(db.LayerTableId, AcadOpenMode.ForRead);
+                LayerTable lt = (LayerTable)trn.GetObject(db.LayerTableId, OpenMode.ForRead);
                 if (!lt.Has(HatchLayer))
                 {
                     LayerTableRecord ltr = new LayerTableRecord();
