@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq.Expressions;
 using Autodesk.AutoCAD.Geometry;
 using Microsoft.Data.Sqlite;
 
@@ -9,8 +10,19 @@ namespace HatchManagerAutoCad
 {
     public class Sqliter
     {
-        private static string dbPath = "base\\landscape.db";
+        
+        public Sqliter()
+        {
+            string relisePath = "G:\\BIM\\01_BIM Library\\02_CIVIL3D\\01_AUTOCAD\\04_ШТРИХОВКИ\\01_БАЗА ДАННЫХ\\landscape.db";
+            if (!Directory.Exists(relisePath))
+                this.dbPath = "\\base\\landscape.db";
+            else
+                this.dbPath = relisePath
+        }
 
+        private string dbPath { get; set; }
+
+        // Получение списка всех разделов
         public List<string> getChapters()
         {
             List<string> chaptersList = new List<string>();
@@ -32,6 +44,7 @@ namespace HatchManagerAutoCad
             return chaptersList;
         }
 
+        // Получение списка всех разделов
         public List<string> getDomains(string chapterName)
         {
             List<string> domainsList = new List<string>();

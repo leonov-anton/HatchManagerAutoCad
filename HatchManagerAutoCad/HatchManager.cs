@@ -12,6 +12,8 @@ using Autodesk.Gis.Map.ObjectData;
 using Entity = Autodesk.AutoCAD.DatabaseServices.Entity;
 using System.Linq;
 using System.Collections;
+using DataBase;
+using System.IO;
 
 namespace HatchManagerAutoCad
 {
@@ -56,11 +58,16 @@ namespace HatchManagerAutoCad
         private string ODTableFieldSorce { get; set; }
 
 
-        [CommandMethod("HMAN")]
+        [CommandMethod("SMLNIS", "HMAN", CommandFlags.Modal)]
         static public void CreateBlockTable()
         {
             HatchManagerGUI hatchMan = new HatchManagerGUI();
             //Application.ShowModalDialog(hatchMan);
+            try
+            {
+                UploadCountDB.UploadDB(true, Path.GetFileName(doc.Name), "Менеждер штриховок", "General");
+            }
+            catch { }
             hatchMan.Show();
         }
 

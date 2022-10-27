@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
 namespace HatchManagerAutoCad
@@ -13,6 +14,7 @@ namespace HatchManagerAutoCad
         private string chapterName { get; set; }
         private string domainName { get; set; }
         private string groupeName { get; set; }
+        private string imgDirPath { get; set; }
 
         public HatchManagerGUI()
         {
@@ -78,7 +80,7 @@ namespace HatchManagerAutoCad
             foreach (List<string> hatchData in db.getHatchsData((string)listBoxGroupe.SelectedItem))
             {
                 dataGridViewHatchData.Rows.Add(hatchData[0], hatchData[1], hatchData[2], hatchData[3]);
-                Bitmap img = new Bitmap($"base\\landscape\\{hatchData[4]}.png");
+                Bitmap img = new Bitmap($"{imgDirPath}\\{hatchData[4]}.png");
                 dataGridViewHatchData.Rows[n].Cells[4].Value = img;
                 dataGridViewHatchData.Rows[n].Height = 60;
                 n++;
@@ -99,6 +101,11 @@ namespace HatchManagerAutoCad
             chapterName = userPath[0];
             domainName = userPath[1];
             groupeName = userPath[2];
+            string imgRelisePath = "G:\\BIM\\01_BIM Library\\02_CIVIL3D\\01_AUTOCAD\\04_ШТРИХОВКИ\\01_БАЗА ДАННЫХ\\landscape";
+            if (Directory.Exists(imgRelisePath))
+                imgDirPath = imgRelisePath;
+            else
+                imgDirPath = "base\\landscape";
             updateChapters();
         }
 
