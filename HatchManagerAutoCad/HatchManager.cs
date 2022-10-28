@@ -67,12 +67,13 @@ namespace HatchManagerAutoCad
                 UploadCountDB.UploadDB(true, Path.GetFileName(doc.Name), "Менеждер штриховок", "General");
             }
             catch { }
-            Application.ShowModalDialog(hatchMan);
-            //hatchMan.Show();
+            Application.ShowModelessDialog(hatchMan);
         }
 
+        // Создание новой штриховки
         public void CreateNewHatch()
         {
+            // Выбор режима создания
             PromptKeywordOptions pko = new PromptKeywordOptions("\nСоздать штриховку по точке или контуру:");
             pko.Keywords.Add("Точка");
             pko.Keywords.Add("Контур");
@@ -82,72 +83,85 @@ namespace HatchManagerAutoCad
                 ed.WriteMessage("\nВыполнение прервано");
                 return;
             }
-            using (DocumentLock docLock = doc.LockDocument())
+            try
             {
-                using (Transaction t = db.TransactionManager.StartTransaction())
+                using (DocumentLock docLock = doc.LockDocument())
                 {
-                    // Создание штриховки
-                    Hatch newHatchObj = new Hatch();
-
-                    BlockTableRecord btr = (BlockTableRecord)t.GetObject(db.CurrentSpaceId, OpenMode.ForWrite);
-                    btr.AppendEntity(newHatchObj);
-                    t.AddNewlyCreatedDBObject(newHatchObj, true);
-
-                    // Создание коллекции id объектов для задания по ним контура
-                    ObjectIdCollection hatBounObjIdCol = new ObjectIdCollection();
-
-                    if (pr.StringResult == "Контур")
+                    using (Transaction t = db.TransactionManager.StartTransaction())
                     {
-                        PromptSelectionOptions pso = new PromptSelectionOptions();
-                        pso.MessageForAdding = "\nВыберите объект с замкнутым контуром";
-                        pso.SingleOnly = true;
-                        PromptSelectionResult psr = ed.GetSelection(pso);
-                        if (psr.Status != PromptStatus.OK)
-                        {
-                            ed.WriteMessage("\nВыполнение прервано");
-                            t.Commit();
-                            return;
-                        }
+                        // Создание штриховки
+                        Hatch newHatchObj = new Hatch();
 
-                        foreach (ObjectId boundObjId in psr.Value.GetObjectIds())
+                        BlockTableRecord btr = (BlockTableRecord)t.GetObject(db.CurrentSpaceId, OpenMode.ForWrite);
+                        btr.AppendEntity(newHatchObj);
+                        t.AddNewlyCreatedDBObject(newHatchObj, true);
+
+                        // Создание коллекции id объектов для задания по ним контура
+                        ObjectIdCollection hatBounObjIdCol = new ObjectIdCollection();
+
+                        if (pr.StringResult == "Контур")
+                        {
+                            PromptSelectionOptions pso = new PromptSelectionOptions();
+                            pso.MessageForAdding = "\nВыберите объект с замкнутым контуром";
+                            pso.SingleOnly = true;
+                            PromptSelectionResult psr = ed.GetSelection(pso);
+                            if (psr.Status != PromptStatus.OK)
+                            {
+                                ed.WriteMessage("\nВыполнение прервано");
+                                t.Commit();
+                                return;
+                            }
+
+                            foreach (ObjectId boundObjId in psr.Value.GetObjectIds())
+                                hatBounObjIdCol.Add(boundObjId);
+
+                            newHatchObj.AppendLoop(HatchLoopTypes.Default, hatBounObjIdCol); // Назначение контура штриховки
+                        }
+                        else
+                        {
+                            PromptPointOptions ppo = new PromptPointOptions("\nУкажите точку внутри замкнутого контура:");
+                            PromptPointResult ppr = ed.GetPoint(ppo);
+                            if (ppr.Status != PromptStatus.OK)
+                            {
+                                ed.WriteMessage("\nВыполнение прервано");
+                                t.Commit();
+                                return;
+                            }
+
+                            // Создание замкнутого контура по точке
+                            DBObjectCollection boundObjs = ed.TraceBoundary(ppr.Value, true);
+                            if (boundObjs.Count == 0)
+                            {
+                                ed.WriteMessage("n\nОшибка! Не удалось определить замкнутый контур!");
+                                t.Commit();
+                                return;
+                            }
+
+                            ObjectId boundObjId = btr.AppendEntity((Entity)boundObjs[0]);
+                            t.AddNewlyCreatedDBObject(boundObjs[0], true);
                             hatBounObjIdCol.Add(boundObjId);
-                    }
-                    else
-                    {
-                        PromptPointOptions ppo = new PromptPointOptions("\nУкажите точку внутри замкнутого контура:");
-                        PromptPointResult ppr = ed.GetPoint(ppo);
-                        if (ppr.Status != PromptStatus.OK)
-                        {
-                            ed.WriteMessage("\nВыполнение прервано");
-                            t.Commit();
-                            return;
+                            
+                            newHatchObj.AppendLoop(HatchLoopTypes.Default, hatBounObjIdCol); // Назначение контура штриховки
+                            boundObjs[0].Erase(); // удаление полилинии контура после создания штриховки
                         }
 
-                        // Создание замкнутого контура по точке
-                        DBObjectCollection boundObjs = ed.TraceBoundary(ppr.Value, true);
-                        if (boundObjs.Count == 0)
-                        {
-                            ed.WriteMessage("n\nОшибка! Не удалось определить замкнутый контур!");
-                            t.Commit();
-                            return;
-                        }
-
-                        ObjectId boundObjId = btr.AppendEntity((Entity)boundObjs[0]);
-                        t.AddNewlyCreatedDBObject(boundObjs[0], true);
-                        hatBounObjIdCol.Add(boundObjId);
+                        // Назначение атребутов и таблицы ObjectData штриховки
+                        SetHatchProperty(newHatchObj);
+                        newHatchObj.EvaluateHatch(true);
+                        WriteObjectData(newHatchObj);
+                        ed.Regen();
+                        t.Commit();
                     }
-
-                    // Назначение контура штриховки
-                    newHatchObj.AppendLoop(HatchLoopTypes.Default, hatBounObjIdCol);
-                    SetHatchProperty(newHatchObj);
-                    newHatchObj.EvaluateHatch(true);
-                    WriteObjectData(newHatchObj);
-                    ed.Regen();
-                    t.Commit();
                 }
+            }
+            catch (Autodesk.AutoCAD.Runtime.Exception ex)
+            {
+                db_hatch.errorsLogging(DateTime.Now.ToString(), Environment.UserName, ex.Message);
+                Application.ShowAlertDialog("ОШИБКА! Сообщите координатору о проблемме!");
             }
         }
 
+        // Изменение штриховки 
         public void ChangeHatch()
         {
             List<TypedValue> typedValueList = new List<TypedValue>();
@@ -159,24 +173,32 @@ namespace HatchManagerAutoCad
                 ed.WriteMessage("\nВыполнение прервано");
                 return;
             }
-
-            using (DocumentLock docLock = doc.LockDocument())
+            try
             {
-                using (Transaction t = db.TransactionManager.StartTransaction())
+                using (DocumentLock docLock = doc.LockDocument())
                 {
-                    foreach (ObjectId objectId in psr.Value.GetObjectIds())
+                    using (Transaction t = db.TransactionManager.StartTransaction())
                     {
-                        Hatch hatchObj = (Hatch)t.GetObject(objectId, OpenMode.ForWrite);
-                        SetHatchProperty(hatchObj);
-                        hatchObj.EvaluateHatch(true);
-                        WriteObjectData(hatchObj);
+                        foreach (ObjectId objectId in psr.Value.GetObjectIds())
+                        {
+                            Hatch hatchObj = (Hatch)t.GetObject(objectId, OpenMode.ForWrite);
+                            SetHatchProperty(hatchObj);
+                            hatchObj.EvaluateHatch(true);
+                            WriteObjectData(hatchObj);
+                        }
+                        ed.Regen();
+                        t.Commit();
                     }
-                    ed.Regen();
-                    t.Commit();
                 }
+            }
+            catch (Autodesk.AutoCAD.Runtime.Exception ex)
+            {
+                db_hatch.errorsLogging(DateTime.Now.ToString(), Environment.UserName, ex.Message);
+                Application.ShowAlertDialog("ОШИБКА! Сообщите координатору о проблемме!");
             }
         }
 
+        // Назначение таблицы ObjectData
         public void SetOdataTable()
         {
             List<TypedValue> typedValueList = new List<TypedValue>();
@@ -188,23 +210,30 @@ namespace HatchManagerAutoCad
                 ed.WriteMessage("\nВыполнение прервано");
                 return;
             }
-
-            using (DocumentLock docLock = doc.LockDocument())
+            try
             {
-                using (Transaction t = db.TransactionManager.StartTransaction())
+                using (DocumentLock docLock = doc.LockDocument())
                 {
-                    foreach (ObjectId objectId in psr.Value.GetObjectIds())
+                    using (Transaction t = db.TransactionManager.StartTransaction())
                     {
-                        Hatch hatchObj = (Hatch)t.GetObject(objectId, OpenMode.ForWrite);
-                        WriteObjectData(hatchObj);
+                        foreach (ObjectId objectId in psr.Value.GetObjectIds())
+                        {
+                            Hatch hatchObj = (Hatch)t.GetObject(objectId, OpenMode.ForWrite);
+                            WriteObjectData(hatchObj);
+                        }
+                        t.Commit();
+                        ed.Regen();
                     }
-                    t.Commit();
-                    ed.Regen();
                 }
             }
-
+            catch (Autodesk.AutoCAD.Runtime.Exception ex)
+            {
+                db_hatch.errorsLogging(DateTime.Now.ToString(), Environment.UserName, $"{ex.Source}\n{ex.Message}");
+                Application.ShowAlertDialog("ОШИБКА! Сообщите координатору о проблемме!");
+            }
         }
 
+        // Назначение атребутов штриховки
         private void SetHatchProperty(Hatch hatchObj)
         {
             using (Transaction trn = db.TransactionManager.StartTransaction())
@@ -267,11 +296,13 @@ namespace HatchManagerAutoCad
             }
         }
 
+        // Запись ObjectData
         private void WriteObjectData(Hatch hatchObj)
         {
             ODTable table = GetOrCreateODTable();
-            ODTables tables = map.ActiveProject.ODTables;
-            Records objectRecs = tables.GetObjectRecords(0, hatchObj.ObjectId, Autodesk.Gis.Map.Constants.OpenMode.OpenForWrite, true);
+            ODTables tables = map.ActiveProject.ODTables; // таблицы обжект дата в файле
+            Records objectRecs = tables.GetObjectRecords(0, hatchObj.ObjectId, Autodesk.Gis.Map.Constants.OpenMode.OpenForWrite, true); // записи таблиц обжект даты присоединенные к объекту
+            // Удаление ранее присоединенных таблиц
             if (objectRecs.Count > 0)
             {
                 IEnumerator iter = objectRecs.GetEnumerator();
@@ -279,6 +310,7 @@ namespace HatchManagerAutoCad
                 objectRecs.RemoveRecord();
                 objectRecs.Dispose();
             }
+            // Назначение таблици
             Record rec = Record.Create();
             table.InitRecord(rec);
             string[] filedNames = ODTableFieldSorce.Split('~');
@@ -304,14 +336,17 @@ namespace HatchManagerAutoCad
             table.AddRecord(rec, hatchObj.ObjectId);
         }
 
+        // Получение или создание таблицы ObjectData по названию
         private ODTable GetOrCreateODTable()
         {
             ODTables tables = map.ActiveProject.ODTables;
+            // Попытка получения таблицы по имени
             try
             {
                 ODTable table = tables[ODTableName];
                 return table;
             }
+            // Создание новой если таблица не найдена
             catch (MapException)
             {
                 FieldDefinitions fieldDefs = map.ActiveProject.MapUtility.NewODFieldDefinitions();

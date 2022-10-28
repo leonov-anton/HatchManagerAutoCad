@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Data.Sqlite;
@@ -325,5 +326,23 @@ namespace HatchManagerAutoCad
             }
         }
 
+        // Запись лога ошибок
+        public void errorsLogging(string time, string userName, string errorText)
+        {
+            using (SqliteConnection conn = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                string insertErrorSql = "INSERT INTO 'ERROR_LOG' (time, user_name, error) VALUES (@time, @userName, @errorText)";
+                conn.Open();
+                using (SqliteCommand cmd = new SqliteCommand(insertErrorSql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@time", time);
+                    cmd.Parameters.AddWithValue("@userName", userName);
+                    cmd.Parameters.AddWithValue("@errorText", errorText);
+                    cmd.ExecuteNonQuery();
+                }
+                conn.Close();
+                return;
+            }
+        }
     }
 }
