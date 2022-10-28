@@ -10,11 +10,11 @@ namespace HatchManagerAutoCad
         
         public Sqliter()
         {
-            string relisePath = @"G:\BIM\01_BIM Library\02_CIVIL3D\01_AUTOCAD\04_ШТРИХОВКИ\01_БАЗА ДАННЫХ\landscape.db";
+            string relisePath = @"G:\BIM\01_BIM Library\02_CIVIL3D\01_AUTOCAD\04_ШТРИХОВКИ\01_БАЗА ДАННЫХ";
             if (!Directory.Exists(relisePath))
-                this.dbPath = @"\base\landscape.db";
+                this.dbPath = @"D:\YandexDisk\C#_projects\AutoCad\HatchManagerAutoCad\HatchManagerAutoCad\bin\Debug\base\landscape.db";
             else
-                this.dbPath = relisePath;
+                this.dbPath = $@"{relisePath}\landscape.db";
         }
 
         private string dbPath { get; set; }

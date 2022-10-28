@@ -105,7 +105,7 @@ namespace HatchManagerAutoCad
             if (Directory.Exists(imgRelisePath))
                 imgDirPath = imgRelisePath;
             else
-                imgDirPath = @"\base\landscape";
+                imgDirPath = @"D:\YandexDisk\C#_projects\AutoCad\HatchManagerAutoCad\HatchManagerAutoCad\bin\Debug\base\landscape";
             updateChapters();
         }
 
