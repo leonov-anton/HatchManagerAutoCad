@@ -41,7 +41,7 @@ namespace HatchManagerAutoCad
             return chaptersList;
         }
 
-        // Получение списка всех разделов
+        // Получение списка всех областей
         public List<string> getDomains(string chapterName)
         {
             List<string> domainsList = new List<string>();
@@ -64,6 +64,7 @@ namespace HatchManagerAutoCad
             return domainsList;
         }
 
+        // Получение списка всех групп
         public List<string> getGroups(string domainName, string chapterName)
         {
             List<string> groupsList = new List<string>();
@@ -87,14 +88,15 @@ namespace HatchManagerAutoCad
             return groupsList;
         }
 
+        // Получение списка всех штриховок в группе
         public List<List<string>> getHatchsData(string groupeName)
         {
             List<List<string>> hatchsList = new List<List<string>>();
 
-            string getGroupTableName = $"SELECT od_table_name FROM 'GROUPS' WHERE name=@groupeName";
-
             using (SqliteConnection conn = new SqliteConnection($"Data Source={dbPath}"))
             {
+                // Получение имени группы
+                string getGroupTableName = $"SELECT od_table_name FROM 'GROUPS' WHERE name=@groupeName";
                 string groupTableName = "";
                 conn.Open();
                 using (SqliteCommand cmd = new SqliteCommand(getGroupTableName, conn))
@@ -107,6 +109,7 @@ namespace HatchManagerAutoCad
                     }
                 }
 
+                // Получение шриховок
                 string getHatchsSql = $"SELECT name, description, hatch_pattern, layer, guid FROM '{groupTableName}'";
                 using (SqliteCommand cmd = new SqliteCommand(getHatchsSql, conn))
                 {
@@ -121,7 +124,10 @@ namespace HatchManagerAutoCad
                             hatchList.Add((string)sqliteDataReader.GetValue(1));
                         hatchList.Add((string)sqliteDataReader.GetValue(2));
                         hatchList.Add((string)sqliteDataReader.GetValue(3));
-                        hatchList.Add((string)sqliteDataReader.GetValue(4));
+                        if (sqliteDataReader.IsDBNull(4))
+                            hatchList.Add("");
+                        else
+                            hatchList.Add((string)sqliteDataReader.GetValue(4));
 
                         hatchsList.Add(hatchList);
                     }
@@ -131,6 +137,7 @@ namespace HatchManagerAutoCad
             return hatchsList;
         }
 
+        // Получение данных по шриховке
         public ArrayList getHatchData(string hatchName, string groupeName)
         {
             ArrayList hatchList = new ArrayList();
@@ -193,6 +200,7 @@ namespace HatchManagerAutoCad
             return hatchList;
         }
 
+        // Получение данных для записи таблицы OD типа int
         public int getIntObjData(string valueName, string groupeName, string hatchName)
         {
             int value = 0;
@@ -214,6 +222,8 @@ namespace HatchManagerAutoCad
             }
             return value;
         }
+
+        // Получение данных для записи таблицы OD типа string
         public string getStrObjData(string valueName, string groupeName, string hatchName)
         {
             string value ="";
@@ -235,6 +245,8 @@ namespace HatchManagerAutoCad
             }
             return value;
         }
+
+        // Получение данных для записи таблицы OD типа double
         public double getRealObjData(string valueName, string groupeName, string hatchName)
         {
             double value = 0;
@@ -257,6 +269,7 @@ namespace HatchManagerAutoCad
             return value;
         }
 
+        // Создание или изменение состояния выбраных разделов для пользователя
         public void setUserPath(string userName, string groupName)
         {
             using (SqliteConnection conn = new SqliteConnection($"Data Source={dbPath}"))
@@ -285,6 +298,7 @@ namespace HatchManagerAutoCad
             }
         }
 
+        // Получение состояния выбраных разделов для пользователя
         public string[] getUserDir(string userName)
         {
             string[] dirs = { "", "", ""};

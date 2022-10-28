@@ -80,8 +80,12 @@ namespace HatchManagerAutoCad
             foreach (List<string> hatchData in db.getHatchsData((string)listBoxGroupe.SelectedItem))
             {
                 dataGridViewHatchData.Rows.Add(hatchData[0], hatchData[1], hatchData[2], hatchData[3]);
-                Bitmap img = new Bitmap($"{imgDirPath}\\{hatchData[4]}.png");
-                dataGridViewHatchData.Rows[n].Cells[4].Value = img;
+                try
+                {
+                    Bitmap img = new Bitmap($"{imgDirPath}\\{hatchData[4]}.png");
+                    dataGridViewHatchData.Rows[n].Cells[4].Value = img;
+                }
+                catch { }
                 dataGridViewHatchData.Rows[n].Height = 60;
                 n++;
             }
