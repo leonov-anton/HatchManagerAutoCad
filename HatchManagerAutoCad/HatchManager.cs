@@ -62,13 +62,13 @@ namespace HatchManagerAutoCad
         static public void CreateBlockTable()
         {
             HatchManagerGUI hatchMan = new HatchManagerGUI();
-            //Application.ShowModalDialog(hatchMan);
             try
             {
                 UploadCountDB.UploadDB(true, Path.GetFileName(doc.Name), "Менеждер штриховок", "General");
             }
             catch { }
-            hatchMan.Show();
+            Application.ShowModalDialog(hatchMan);
+            //hatchMan.Show();
         }
 
         public void CreateNewHatch()

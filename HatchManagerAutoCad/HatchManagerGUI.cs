@@ -101,11 +101,11 @@ namespace HatchManagerAutoCad
             chapterName = userPath[0];
             domainName = userPath[1];
             groupeName = userPath[2];
-            string imgRelisePath = "G:\\BIM\\01_BIM Library\\02_CIVIL3D\\01_AUTOCAD\\04_ШТРИХОВКИ\\01_БАЗА ДАННЫХ\\landscape";
+            string imgRelisePath = @"G:\BIM\01_BIM Library\02_CIVIL3D\01_AUTOCAD\04_ШТРИХОВКИ\01_БАЗА ДАННЫХ\landscape";
             if (Directory.Exists(imgRelisePath))
                 imgDirPath = imgRelisePath;
             else
-                imgDirPath = "base\\landscape";
+                imgDirPath = @"\base\landscape";
             updateChapters();
         }
 
