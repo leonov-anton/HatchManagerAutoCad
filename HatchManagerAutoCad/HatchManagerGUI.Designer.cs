@@ -44,14 +44,14 @@
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.labelPic = new System.Windows.Forms.Label();
             this.dataGridViewHatchData = new System.Windows.Forms.DataGridView();
-            this.buttonNew = new System.Windows.Forms.Button();
-            this.buttonChange = new System.Windows.Forms.Button();
-            this.buttonSetOD = new System.Windows.Forms.Button();
             this.HatchName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Description = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PatName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Layer = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Img = new System.Windows.Forms.DataGridViewImageColumn();
+            this.buttonNew = new System.Windows.Forms.Button();
+            this.buttonChange = new System.Windows.Forms.Button();
+            this.buttonSetOD = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewHatchData)).BeginInit();
             this.SuspendLayout();
@@ -117,6 +117,7 @@
             this.pictureBox.Location = new System.Drawing.Point(20, 302);
             this.pictureBox.Name = "pictureBox";
             this.pictureBox.Size = new System.Drawing.Size(200, 200);
+            this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox.TabIndex = 6;
             this.pictureBox.TabStop = false;
             // 
@@ -164,42 +165,6 @@
             this.dataGridViewHatchData.TabIndex = 8;
             this.dataGridViewHatchData.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewHatchData_CellContentClick);
             // 
-            // buttonNew
-            // 
-            this.buttonNew.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonNew.Location = new System.Drawing.Point(517, 518);
-            this.buttonNew.Margin = new System.Windows.Forms.Padding(10);
-            this.buttonNew.Name = "buttonNew";
-            this.buttonNew.Size = new System.Drawing.Size(70, 30);
-            this.buttonNew.TabIndex = 10;
-            this.buttonNew.Text = "Новая";
-            this.buttonNew.UseVisualStyleBackColor = true;
-            this.buttonNew.Click += new System.EventHandler(this.buttonNew_Click);
-            // 
-            // buttonChange
-            // 
-            this.buttonChange.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonChange.Location = new System.Drawing.Point(697, 518);
-            this.buttonChange.Margin = new System.Windows.Forms.Padding(10);
-            this.buttonChange.Name = "buttonChange";
-            this.buttonChange.Size = new System.Drawing.Size(73, 30);
-            this.buttonChange.TabIndex = 11;
-            this.buttonChange.Text = "Изменить";
-            this.buttonChange.UseVisualStyleBackColor = true;
-            this.buttonChange.Click += new System.EventHandler(this.buttonChange_Click);
-            // 
-            // buttonSetOD
-            // 
-            this.buttonSetOD.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonSetOD.Location = new System.Drawing.Point(607, 518);
-            this.buttonSetOD.Margin = new System.Windows.Forms.Padding(10, 3, 10, 3);
-            this.buttonSetOD.Name = "buttonSetOD";
-            this.buttonSetOD.Size = new System.Drawing.Size(70, 30);
-            this.buttonSetOD.TabIndex = 12;
-            this.buttonSetOD.Text = "Задать OD";
-            this.buttonSetOD.UseVisualStyleBackColor = true;
-            this.buttonSetOD.Click += new System.EventHandler(this.buttonSetOD_Click);
-            // 
             // HatchName
             // 
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
@@ -243,6 +208,42 @@
             this.Img.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
             this.Img.Name = "Img";
             this.Img.ReadOnly = true;
+            // 
+            // buttonNew
+            // 
+            this.buttonNew.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonNew.Location = new System.Drawing.Point(517, 518);
+            this.buttonNew.Margin = new System.Windows.Forms.Padding(10);
+            this.buttonNew.Name = "buttonNew";
+            this.buttonNew.Size = new System.Drawing.Size(70, 30);
+            this.buttonNew.TabIndex = 10;
+            this.buttonNew.Text = "Новая";
+            this.buttonNew.UseVisualStyleBackColor = true;
+            this.buttonNew.Click += new System.EventHandler(this.buttonNew_Click);
+            // 
+            // buttonChange
+            // 
+            this.buttonChange.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonChange.Location = new System.Drawing.Point(697, 518);
+            this.buttonChange.Margin = new System.Windows.Forms.Padding(10);
+            this.buttonChange.Name = "buttonChange";
+            this.buttonChange.Size = new System.Drawing.Size(73, 30);
+            this.buttonChange.TabIndex = 11;
+            this.buttonChange.Text = "Изменить";
+            this.buttonChange.UseVisualStyleBackColor = true;
+            this.buttonChange.Click += new System.EventHandler(this.buttonChange_Click);
+            // 
+            // buttonSetOD
+            // 
+            this.buttonSetOD.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonSetOD.Location = new System.Drawing.Point(607, 518);
+            this.buttonSetOD.Margin = new System.Windows.Forms.Padding(10, 3, 10, 3);
+            this.buttonSetOD.Name = "buttonSetOD";
+            this.buttonSetOD.Size = new System.Drawing.Size(70, 30);
+            this.buttonSetOD.TabIndex = 12;
+            this.buttonSetOD.Text = "Задать OD";
+            this.buttonSetOD.UseVisualStyleBackColor = true;
+            this.buttonSetOD.Click += new System.EventHandler(this.buttonSetOD_Click);
             // 
             // HatchManagerGUI
             // 

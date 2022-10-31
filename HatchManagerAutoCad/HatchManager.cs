@@ -115,7 +115,17 @@ namespace HatchManagerAutoCad
                             foreach (ObjectId boundObjId in psr.Value.GetObjectIds())
                                 hatBounObjIdCol.Add(boundObjId);
 
-                            newHatchObj.AppendLoop(HatchLoopTypes.Default, hatBounObjIdCol); // Назначение контура штриховки
+                            try
+                            {
+                                newHatchObj.AppendLoop(HatchLoopTypes.Default, hatBounObjIdCol); // Назначение контура штриховки
+                            }
+                            catch
+                            {
+                                ed.WriteMessage("n\nОшибка! Не удалось определить замкнутый контур!");
+                                t.Commit();
+                                return;
+                            }
+                            
                         }
                         else
                         {

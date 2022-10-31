@@ -331,7 +331,7 @@ namespace HatchManagerAutoCad
         {
             using (SqliteConnection conn = new SqliteConnection($"Data Source={dbPath}"))
             {
-                string insertErrorSql = "INSERT INTO 'ERROR_LOG' (time, user_name, error) VALUES (@time, @userName, @errorText)";
+                string insertErrorSql = "INSERT INTO 'ERROR_LOG' (time, user, error) VALUES (@time, @userName, @errorText)";
                 conn.Open();
                 using (SqliteCommand cmd = new SqliteCommand(insertErrorSql, conn))
                 {
