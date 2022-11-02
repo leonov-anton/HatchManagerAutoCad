@@ -95,68 +95,83 @@ namespace HatchManagerAutoCad
                         BlockTableRecord btr = (BlockTableRecord)t.GetObject(db.CurrentSpaceId, OpenMode.ForWrite);
                         btr.AppendEntity(newHatchObj);
                         t.AddNewlyCreatedDBObject(newHatchObj, true);
+                        
+                        // Назначение атребутов штриховки
+                        SetHatchProperty(newHatchObj);
 
                         // Создание коллекции id объектов для задания по ним контура
                         ObjectIdCollection hatBounObjIdCol = new ObjectIdCollection();
 
+                        bool stopLoop = false;
+
                         if (pr.StringResult == "Контур")
                         {
-                            PromptSelectionOptions pso = new PromptSelectionOptions();
-                            pso.MessageForAdding = "\nВыберите объект с замкнутым контуром";
-                            pso.SingleOnly = true;
-                            PromptSelectionResult psr = ed.GetSelection(pso);
-                            if (psr.Status != PromptStatus.OK)
+                            while (stopLoop == false)
                             {
-                                ed.WriteMessage("\nВыполнение прервано");
-                                t.Commit();
-                                return;
+                                PromptSelectionOptions pso = new PromptSelectionOptions();
+                                pso.MessageForAdding = "\nВыберите объект с замкнутым контуром";
+                                pso.SingleOnly = true;
+                                PromptSelectionResult psr = ed.GetSelection(pso);
+                                if (psr.Status != PromptStatus.OK)
+                                {
+                                    ed.WriteMessage("\nВыполнение прервано");
+                                    stopLoop = true;
+                                }
+                                else
+                                {
+                                    foreach (ObjectId boundObjId in psr.Value.GetObjectIds())
+                                        hatBounObjIdCol.Add(boundObjId);
+                                    try
+                                    {
+                                        newHatchObj.AppendLoop(HatchLoopTypes.External, hatBounObjIdCol); // Назначение контура штриховки
+                                        hatBounObjIdCol.Clear(); // Очистка списка границ
+                                    }
+                                    catch
+                                    {
+                                        ed.WriteMessage("n\nОшибка! Не удалось определить замкнутый контур!");
+                                        return;
+                                    }
+                                }
                             }
-
-                            foreach (ObjectId boundObjId in psr.Value.GetObjectIds())
-                                hatBounObjIdCol.Add(boundObjId);
-
-                            try
-                            {
-                                newHatchObj.AppendLoop(HatchLoopTypes.Default, hatBounObjIdCol); // Назначение контура штриховки
-                            }
-                            catch
-                            {
-                                ed.WriteMessage("n\nОшибка! Не удалось определить замкнутый контур!");
-                                t.Commit();
-                                return;
-                            }
-                            
                         }
                         else
                         {
-                            PromptPointOptions ppo = new PromptPointOptions("\nУкажите точку внутри замкнутого контура:");
-                            PromptPointResult ppr = ed.GetPoint(ppo);
-                            if (ppr.Status != PromptStatus.OK)
+                            while (stopLoop == false)
                             {
-                                ed.WriteMessage("\nВыполнение прервано");
-                                t.Commit();
-                                return;
-                            }
+                                PromptPointOptions ppo = new PromptPointOptions("\nУкажите точку внутри замкнутого контура:");
+                                PromptPointResult ppr = ed.GetPoint(ppo);
+                                if (ppr.Status != PromptStatus.OK)
+                                {
+                                    ed.WriteMessage("\nВыполнение прервано");
+                                    stopLoop = true;
+                                }
+                                else
+                                {
+                                    // Создание замкнутого контура по точке
+                                    DBObjectCollection boundObjs = ed.TraceBoundary(ppr.Value, true);
+                                    if (boundObjs.Count == 0)
+                                    {
+                                        ed.WriteMessage("n\nОшибка! Не удалось определить замкнутый контур!");
+                                        return;
+                                    }
 
-                            // Создание замкнутого контура по точке
-                            DBObjectCollection boundObjs = ed.TraceBoundary(ppr.Value, true);
-                            if (boundObjs.Count == 0)
-                            {
-                                ed.WriteMessage("n\nОшибка! Не удалось определить замкнутый контур!");
-                                t.Commit();
-                                return;
-                            }
+                                    ObjectId boundObjId = btr.AppendEntity((Entity)boundObjs[0]);
+                                    t.AddNewlyCreatedDBObject(boundObjs[0], true);
+                                    hatBounObjIdCol.Add(boundObjId);
 
-                            ObjectId boundObjId = btr.AppendEntity((Entity)boundObjs[0]);
-                            t.AddNewlyCreatedDBObject(boundObjs[0], true);
-                            hatBounObjIdCol.Add(boundObjId);
-                            
-                            newHatchObj.AppendLoop(HatchLoopTypes.Default, hatBounObjIdCol); // Назначение контура штриховки
-                            boundObjs[0].Erase(); // удаление полилинии контура после создания штриховки
+                                    newHatchObj.AppendLoop(HatchLoopTypes.External, hatBounObjIdCol); // Назначение контура штриховки
+                                    boundObjs[0].Erase(); // удаление полилинии контура после создания штриховки
+                                }
+                            }
                         }
 
-                        // Назначение атребутов и таблицы ObjectData штриховки
-                        SetHatchProperty(newHatchObj);
+                        // Проверка задан ли хоть один контур, если нет выйти без записи изменений
+                        if (newHatchObj.NumberOfLoops == 0)
+                        {
+                            return;
+                        }
+
+                        // Назначение таблицы ObjectData штриховки
                         newHatchObj.EvaluateHatch(true);
                         WriteObjectData(newHatchObj);
                         ed.Regen();

@@ -117,7 +117,7 @@
             this.pictureBox.Location = new System.Drawing.Point(20, 302);
             this.pictureBox.Name = "pictureBox";
             this.pictureBox.Size = new System.Drawing.Size(200, 200);
-            this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox.TabIndex = 6;
             this.pictureBox.TabStop = false;
             // 
@@ -254,7 +254,6 @@
             this.Controls.Add(this.buttonChange);
             this.Controls.Add(this.buttonNew);
             this.Controls.Add(this.dataGridViewHatchData);
-            this.Controls.Add(this.pictureBox);
             this.Controls.Add(this.listBoxGroupe);
             this.Controls.Add(this.listBoxDomain);
             this.Controls.Add(this.comboBoxChapter);
@@ -262,6 +261,7 @@
             this.Controls.Add(this.labelDomain);
             this.Controls.Add(this.labelGroupe);
             this.Controls.Add(this.labelPic);
+            this.Controls.Add(this.pictureBox);
             this.MinimumSize = new System.Drawing.Size(800, 600);
             this.Name = "HatchManagerGUI";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
