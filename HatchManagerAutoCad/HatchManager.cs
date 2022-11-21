@@ -155,12 +155,32 @@ namespace HatchManagerAutoCad
                                         return;
                                     }
 
-                                    ObjectId boundObjId = btr.AppendEntity((Entity)boundObjs[0]);
-                                    t.AddNewlyCreatedDBObject(boundObjs[0], true);
-                                    hatBounObjIdCol.Add(boundObjId);
+                                    if (boundObjs.Count > 1)
+                                    {
+                                        int lastBorderIndex = boundObjs.Count - 1;
+                                        ObjectId outerOoundObjId = btr.AppendEntity((Entity)boundObjs[lastBorderIndex]);
+                                        t.AddNewlyCreatedDBObject((Entity)boundObjs[lastBorderIndex], true);
+                                        hatBounObjIdCol.Add(outerOoundObjId);
 
-                                    newHatchObj.AppendLoop(HatchLoopTypes.External, hatBounObjIdCol); // Назначение контура штриховки
-                                    boundObjs[0].Erase(); // удаление полилинии контура после создания штриховки
+                                        newHatchObj.AppendLoop(HatchLoopTypes.Outermost, hatBounObjIdCol); // Назначение внешнего контура штриховки
+
+                                        boundObjs[lastBorderIndex].Erase();
+                                        boundObjs.RemoveAt(lastBorderIndex);
+
+                                        hatBounObjIdCol.Clear();
+                                    }
+
+                                    foreach (Entity boundObj in boundObjs)
+                                    {      
+                                        ObjectId boundObjId = btr.AppendEntity(boundObj);
+                                        t.AddNewlyCreatedDBObject(boundObj, true);
+                                        hatBounObjIdCol.Add(boundObjId);
+
+                                        newHatchObj.AppendLoop(HatchLoopTypes.External, hatBounObjIdCol); // Назначение контура штриховки
+
+                                        hatBounObjIdCol.Clear();
+                                        boundObj.Erase(); // удаление полилинии контура после создания штриховки
+                                    }
                                 }
                             }
                         }
@@ -171,10 +191,11 @@ namespace HatchManagerAutoCad
                             return;
                         }
 
+                        newHatchObj.HatchStyle = HatchStyle.Outer;
+
                         // Назначение таблицы ObjectData штриховки
-                        newHatchObj.EvaluateHatch(true);
                         WriteObjectData(newHatchObj);
-                        ed.Regen();
+                        newHatchObj.EvaluateHatch(true);
                         t.Commit();
                     }
                 }
