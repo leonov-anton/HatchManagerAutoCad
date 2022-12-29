@@ -71,6 +71,7 @@ namespace HatchManagerAutoCad
             Application.ShowModelessDialog(hatchMan);
         }
 
+
         /// <summary>
         /// Создание новой штриховки
         /// </summary>
