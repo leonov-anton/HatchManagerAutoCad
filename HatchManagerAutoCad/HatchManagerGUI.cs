@@ -156,7 +156,11 @@ namespace HatchManagerAutoCad
 
         private void HatchManagerGUI_FormClosing(Object sender, FormClosingEventArgs e)
         {
-            db.setUserPath(Environment.UserName, (string)listBoxGroupe.SelectedItem);
+            try
+            {
+                db.setUserPath(Environment.UserName, (string)listBoxGroupe.SelectedItem);
+            }
+            catch { }
         }
     }
 }
